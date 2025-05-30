@@ -1,0 +1,14 @@
+import axios from "axios";
+import { auth } from "../firebaseConfig";
+
+export const apiClient = async () => {
+    const user = auth.currentUser;
+    const token = user ? await user.getIdToken() : null;
+
+    return axios.create({
+        baseURL: 'http://localhost:5000/api',
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+};
