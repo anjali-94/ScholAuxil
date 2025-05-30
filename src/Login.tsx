@@ -7,6 +7,7 @@ import {
 } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import ForgotPassword from './ForgotPassword';
+import { Link } from 'react-router-dom';
 
 const Login = () => {
     const auth = getAuth();
@@ -118,12 +119,9 @@ const Login = () => {
 
                             <p className="text-center mt-6 text-gray-600">
                                 Don't have an account?{' '}
-                                <a
-                                    href="/signup"
-                                    className="text-blue-600 font-medium hover:underline"
-                                >
-                                    Sign up
-                                </a>
+
+                                <Link to="/Signup" className="text-blue-600 font-medium hover:underline">Sign Up</Link>
+
                             </p>
                         </>
                     )}
