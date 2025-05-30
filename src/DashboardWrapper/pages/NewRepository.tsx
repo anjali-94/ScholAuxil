@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createRepository } from '../services/repositoryService';
 import { useFlashMessage } from '../hooks/useFlashMessage';
 
 export default function NewRepository() {
@@ -16,7 +15,6 @@ export default function NewRepository() {
     }
 
     try {
-      // const newRepo = await createRepository(name);
       showMessage(`Repository "${name}" created successfully!`, 'success');
       navigate('/repository');
     } catch (error) {
