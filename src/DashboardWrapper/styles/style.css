@@ -1,0 +1,36 @@
+body {
+  padding-bottom: 70px; /* Increased padding if footer is taller or for more space */
+}
+
+.table th, .table td {
+  vertical-align: middle;
+}
+
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  padding-bottom: 20px;
+}
+
+.modal-backdrop {
+  z-index: 1040 !important;
+}
+
+.modal {
+  z-index: 1050 !important;
+}
+
+/* Ensure the footer always has some basic styling */
+.footer {
+  background-color: #f8f9fa;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 60px;
+  line-height: 60px;
+}
