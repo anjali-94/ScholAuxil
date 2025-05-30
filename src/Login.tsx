@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import ForgotPassword from './ForgotPassword';
 import { Link } from 'react-router-dom';
 
+
 const Login = () => {
     const auth = getAuth();
     const navigate = useNavigate();

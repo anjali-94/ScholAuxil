@@ -20,11 +20,11 @@ const ForgotPassword = () => {
 
   return (
     <div className='w-full flex flex-col items-center'>
-      <h3 className='text-3xl text-white mb-4 mt-10'>Reset Password</h3>
+      <h3 className='text-3xl text-gray-700 mb-4 mt-10'>Reset Password</h3>
       <input
         type='email'
         placeholder='Enter your email'
-        className='w-full text-white py-2 mb-4 bg-transparent border-b border-gray-500 focus:outline-none focus:border-white'
+        className='w-full text-black py-2 mb-4 bg-transparent border-b border-gray-500 focus:outline-none focus:border-black'
         value={email}
         onChange={(e) => setEmail(e.target.value)} />
       <button
@@ -34,11 +34,9 @@ const ForgotPassword = () => {
       </button>
       {error && <div className='text-red-500 mt-4'>{error}</div>}
       {successMessage && <div className='text-green-500 mt-4'>{successMessage}</div>}
-      <button
-        className='mt-4 text-blue-500 underline'>
-        <a href='/login'>Back to Login</a>
-
-      </button>
+    
+        
+    
     </div>
 
   );

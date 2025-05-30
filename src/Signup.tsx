@@ -7,6 +7,7 @@ import {
   sendEmailVerification,
 } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
+ import { Link } from 'react-router-dom';
 
 const Signup = () => {
   const auth = getAuth();
@@ -55,14 +56,14 @@ const Signup = () => {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
-       {/* Left Panel */}
-            <div className="w-full md:w-1/2 h-60 md:h-screen bg-[#e0f2fe] flex flex-col">
+      {/* Left Panel */}
+      <div className="w-full md:w-1/2 h-60 md:h-screen bg-[#e0f2fe] flex flex-col">
 
-                {/* Bottom - Full Image */}
-                <div className="flex-grow flex justify-center items-center">
-                    <img src="/images/icons/Signup.jpg" alt="Signup Illustration" className="h-full" />
-                </div>
-            </div>
+        {/* Bottom - Full Image */}
+        <div className="flex-grow flex justify-center items-center">
+          <img src="/images/icons/Signup.jpg" alt="Signup Illustration" className="h-full" />
+        </div>
+      </div>
 
       <div className="w-full md:w-1/2 flex items-center justify-center bg-white px-6 py-12 md:px-20">
         <div className="w-full max-w-md">
@@ -122,12 +123,8 @@ const Signup = () => {
 
           <p className="text-center mt-6 text-gray-600">
             Already have an account?{' '}
-            <a
-              href="/login"
-              className="text-blue-600 font-medium hover:underline"
-            >
-              Log in
-            </a>
+            <Link to="/Login" className="text-blue-600 font-medium hover:underline"> Log in</Link>
+
           </p>
         </div>
       </div>
