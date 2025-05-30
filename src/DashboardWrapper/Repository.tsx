@@ -4,10 +4,9 @@ import { Link, useSearchParams } from 'react-router-dom';
 import type { Repository, Paper } from './types/models';
 import { useFlashMessage } from './hooks/useFlashMessage';
 import Navbar from './components/Navbar';
-import Footer from './components/Footer';
 import FlashMessage from './components/FlashMessage';
 import { apiClient } from './apiClient.tsx'; 
-
+import './styles/Repository.css';
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 export default function Repository() {
@@ -22,7 +21,7 @@ export default function Repository() {
   const [notes, setNotes] = useState('');
   const [lastPageSeen, setLastPageSeen] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const { message, type, showMessage, clearMessage } = useFlashMessage();
+  const { showMessage } = useFlashMessage();
 
   // Determine view based on URL parameters
   useEffect(() => {
@@ -200,31 +199,33 @@ export default function Repository() {
 
   // Handle paper update
   const handleUpdatePaper = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!currentPaper) return;
-    try {
-      const client = await apiClient(); // Get authenticated Axios instance
+  e.preventDefault();
+  if (!currentPaper) return;
+  try {
+    const client = await apiClient(); // Get authenticated Axios instance
+    const response = await client.put(`/paper/${currentPaper.id}`, {
+      notes,
+      last_page_seen: lastPageSeen ? parseInt(lastPageSeen) : null,
+    });
 
-      const response = await client.patch(`/paper/${currentPaper.id}`, {
-        notes,
-        last_page_seen: lastPageSeen ? parseInt(lastPageSeen) : null,
-      });
-
-      const updatedPaper = response.data;
-      setCurrentPaper(updatedPaper);
-      showMessage('Paper details updated!', 'success');
-    } catch (error) {
-      showMessage('Failed to update paper', 'danger');
-    }
-  };
-
-
+    const updatedPaper = response.data;
+    setCurrentPaper(updatedPaper);
+    console.log('Showing success message');
+    showMessage('Paper details updated!', 'success');
+  } catch (error: any) {
+    console.error('Error updating paper:', error.response?.data || error.message);
+    showMessage(`Failed to update paper: ${error.response?.data?.error || error.message}`, 'danger');
+  }
+};
   // Render Home View (List of Repositories)
   const renderHome = () => (
     <div>
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h1>Repositories</h1>
-        <button onClick={() => setSearchParams({ new: 'true' })} className="btn btn-success">
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
+        <h1 className="fs-3 fs-md-2 mb-0">Repositories</h1>
+        <button
+          onClick={() => setSearchParams({ new: 'true' })}
+          className="btn btn-success btn-sm  w-md-auto"
+        >
           Create New Repository
         </button>
       </div>
@@ -276,10 +277,19 @@ export default function Repository() {
             required
           />
         </div>
-        <button type="submit" className="btn btn-primary">Create Repository</button>
-        <button type="button" onClick={() => setSearchParams({})} className="btn btn-secondary ml-2">
-          Cancel
-        </button>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mt-4">
+  <button type="submit" className="btn btn-primary w-full sm:w-auto">
+    Create Repository
+  </button>
+  <button
+    type="button"
+    onClick={() => setSearchParams({})}
+    className="btn btn-secondary w-full sm:w-auto"
+  >
+    Cancel
+  </button>
+</div>
+
       </form>
     </div>
   );
@@ -297,40 +307,43 @@ export default function Repository() {
         </div>
         <p><Link to="/repository">« Back to Repositories</Link></p>
         {currentRepo.papers && currentRepo.papers.length > 0 ? (
-          <table className="table table-hover">
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>Original Filename</th>
-                <th>Uploaded</th>
-                <th>Last Opened</th>
-                <th>Last Page</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentRepo.papers.map(paper => (
-                <tr key={paper.id}>
-                  <td><Link to={`/repository?paperId=${paper.id}`}>{paper.title}</Link></td>
-                  <td>{paper.original_filename}</td>
-                  <td>{new Date(paper.uploaded_at).toLocaleString()}</td>
-                  <td>{paper.last_opened ? new Date(paper.last_opened).toLocaleString() : 'Never'}</td>
-                  <td>{paper.last_page_seen ?? 'N/A'}</td>
-                  <td>
-                    <Link to={`/repository?paperId=${paper.id}`} className="btn btn-sm btn-info mr-2">
-                      View/Edit
-                    </Link>
-                    <button
-                      onClick={() => handleDeletePaper(paper.id, paper.title)}
-                      className="btn btn-sm btn-danger"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="table-responsive overflow-x-auto">
+  <table className="table table-hover min-w-full">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Original Filename</th>
+        <th>Uploaded</th>
+        <th>Last Opened</th>
+        <th>Last Page</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {currentRepo.papers.map(paper => (
+        <tr key={paper.id}>
+          <td><Link to={`/repository?paperId=${paper.id}`}>{paper.title}</Link></td>
+          <td>{paper.original_filename}</td>
+          <td>{new Date(paper.uploaded_at).toLocaleString()}</td>
+          <td>{paper.last_opened ? new Date(paper.last_opened).toLocaleString() : 'Never'}</td>
+          <td>{paper.last_page_seen ?? 'N/A'}</td>
+          <td>
+            <Link to={`/repository?paperId=${paper.id}`} className="btn btn-sm btn-info mr-2">
+              View/Edit
+            </Link>
+            <button
+              onClick={() => handleDeletePaper(paper.id, paper.title)}
+              className="btn btn-sm btn-danger"
+            >
+              Delete
+            </button>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
         ) : (
           <p>No papers found in this repository.</p>
         )}
@@ -459,7 +472,7 @@ export default function Repository() {
                   rows={10}
                 />
               </div>
-              <button type="submit" className="btn btn-success">Save Changes</button>
+              <button type="submit" className="btn btn-success  btn-save">Save Changes</button>
             </form>
           </div>
         </div>
@@ -481,7 +494,7 @@ export default function Repository() {
         {view === 'repoDetail' && renderRepoDetail()}
         {view === 'paperDetail' && renderPaperDetail()}
       </div>
-      <Footer />
+
     </>
   );
 }

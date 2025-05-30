@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Copy, Plus } from 'lucide-react';
+import { Search, Copy} from 'lucide-react';
 import qs from 'qs';
 
 interface CitationStyle {
@@ -49,10 +49,10 @@ const CitationGenerator: React.FC = () => {
   const [searchResults, setSearchResults] = useState<(BookResult | WebsiteResult)[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchType, setSearchType] = useState<'book' | 'website'>('book');
- const [isDropDownOpen, setIsDropdownOpen] = useState(false);
+  const [isDropDownOpen, setIsDropdownOpen] = useState(false);
 
   // Use Flask backend as proxy
- const API_BASE = import.meta.env.VITE_BACKEND_URL;
+  const API_BASE = import.meta.env.VITE_BACKEND_URL;
 
 
   // Load citation styles on component mount
@@ -60,42 +60,42 @@ const CitationGenerator: React.FC = () => {
     loadCitationStyles();
   }, []);
 
-  
+
 
   const loadCitationStyles = async () => {
-  try {
-    console.log('Loading citation styles...');
-    const response = await fetch(`${API_BASE}/styles?limit=50`, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-      },
-    });
+    try {
+      console.log('Loading citation styles...');
+      const response = await fetch(`${API_BASE}/styles?limit=50`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
 
-    if (!response.ok) {
-      throw new Error(`Styles API error: ${response.status} ${response.statusText}`);
+      if (!response.ok) {
+        throw new Error(`Styles API error: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      const styles = (data.citationStyles || []).map((style: Partial<CitationStyle>) => ({
+        citationFile: style.citationFile ?? 'unknown.csl',
+        citationName: style.citationName ?? style.citationFile?.replace(/\.csl$/, '').replace(/-/g, ' ') ?? 'Unnamed Style',
+        citationShortName: style.citationShortName ?? null,
+      }));
+
+      setAvailableStyles(styles);
+    } catch (error) {
+      console.error('Failed to load citation styles:', error);
+      // Fallback styles with .csl extension
+      setAvailableStyles([
+        { citationName: 'MLA 9th edition', citationShortName: 'MLA 9', citationFile: 'modern-language-association.csl' },
+        { citationName: 'MLA 7th edition', citationShortName: 'MLA 7', citationFile: 'modern-language-association-7th-edition.csl' },
+        { citationName: 'Chicago Manual of Style', citationShortName: 'Chicago', citationFile: 'chicago-fullnote-bibliography.csl' },
+        { citationName: 'American Psychological Association 7th edition', citationShortName: 'APA', citationFile: 'apa.csl' },
+      ]);
     }
-
-    const data = await response.json();
-
-    const styles = (data.citationStyles || []).map((style: Partial<CitationStyle>)=> ({
-      citationFile: style.citationFile ?? 'unknown.csl',
-      citationName: style.citationName ?? style.citationFile?.replace(/\.csl$/, '').replace(/-/g, ' ') ?? 'Unnamed Style',
-      citationShortName: style.citationShortName ?? null,
-    }));
-
-    setAvailableStyles(styles);
-  } catch (error) {
-    console.error('Failed to load citation styles:', error);
-    // Fallback styles with .csl extension
-    setAvailableStyles([
-      { citationName: 'MLA 9th edition', citationShortName: 'MLA 9', citationFile: 'modern-language-association.csl' },
-      { citationName: 'MLA 7th edition', citationShortName: 'MLA 7', citationFile: 'modern-language-association-7th-edition.csl' },
-      { citationName: 'Chicago Manual of Style', citationShortName: 'Chicago', citationFile: 'chicago-fullnote-bibliography.csl' },
-      { citationName: 'American Psychological Association 7th edition', citationShortName: 'APA', citationFile: 'apa.csl' },
-    ]);
-  }
-};
+  };
 
 
   const isUrl = (str: string) => {
@@ -180,14 +180,14 @@ const CitationGenerator: React.FC = () => {
       publisher: book.publisher,
       issued: book.date
         ? {
-            'date-parts': [
-              [
-                parseInt(book.date.split('-')[0], 10), // Year
-                parseInt(book.date.split('-')[1], 10) || 1, // Month
-                parseInt(book.date.split('-')[2], 10) || 1, // Day
-              ],
+          'date-parts': [
+            [
+              parseInt(book.date.split('-')[0], 10), // Year
+              parseInt(book.date.split('-')[1], 10) || 1, // Month
+              parseInt(book.date.split('-')[2], 10) || 1, // Day
             ],
-          }
+          ],
+        }
         : { 'date-parts': [[2025, 1, 1]] }, // Fallback date
     };
 
@@ -201,24 +201,24 @@ const CitationGenerator: React.FC = () => {
       title: website.title,
       author: website.authors?.length
         ? website.authors.map(author => {
-            const parts = author.split(' ');
-            const last = parts.pop() || '';
-            const first = parts.join(' ');
-            return { type: 'Person', first, last };
-          })
+          const parts = author.split(' ');
+          const last = parts.pop() || '';
+          const first = parts.join(' ');
+          return { type: 'Person', first, last };
+        })
         : [{ type: 'Person', first: '', last: '' }], // Empty author if none
       'container-title': website['container-title'] || website.publisher,
       URL: website.url,
       issued: website.date
         ? {
-            'date-parts': [
-              [
-                parseInt(website.date.split('-')[0], 10), // Year
-                parseInt(website.date.split('-')[1], 10) || 1, // Month
-                parseInt(website.date.split('-')[2], 10) || 1, // Day
-              ],
+          'date-parts': [
+            [
+              parseInt(website.date.split('-')[0], 10), // Year
+              parseInt(website.date.split('-')[1], 10) || 1, // Month
+              parseInt(website.date.split('-')[2], 10) || 1, // Day
             ],
-          }
+          ],
+        }
         : { 'date-parts': [[2025, 1, 1]] }, // Fallback date
     };
 
@@ -308,30 +308,29 @@ const CitationGenerator: React.FC = () => {
         <div className="text-center pb-12">
           <h1 className="text-6xl font-light text-gray-800 mb-4 text-center"></h1>
           <p className="text-xl text-gray-600 mb-8 text-center">Effortless Citation Generation in MLA,APA and Chicago Styles </p>
-          
+
         </div>
 
         {/* Search Input */}
-        <div className="pb-8">
-          <div className="relative max-w-2xl mx-auto">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Enter URL/Book Name"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyPress={handleKeyPress}
-              className="w-full pl-12 pr-4 py-4 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-            <button
-              onClick={handleSearch}
-              disabled={isSearching}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 disabled:bg-gray-300"
-            >
-              {isSearching ? 'Searching...' : 'Search'}
-            </button>
-          </div>
+        <div className="flex flex-col sm:flex-row items-stretch gap-3 mb-6 w-full max-w-3xl mx-auto">
+          <input
+            type="text"
+            placeholder="Enter book title or URL..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyPress={handleKeyPress}
+            className="w-full sm:flex-1 px-6 py-3 text-lg border rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            onClick={handleSearch}
+            disabled={isSearching}
+            className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Search size={18} />
+            <span className="hidden sm:inline">Search</span>
+          </button>
         </div>
+
 
         {/* Citation Display */}
         <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
@@ -349,7 +348,7 @@ const CitationGenerator: React.FC = () => {
               >
                 <Copy className="w-5 h-5" />
               </button>
-           
+
             </div>
           </div>
 
@@ -357,67 +356,63 @@ const CitationGenerator: React.FC = () => {
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => handleStyleChange('mla-9')}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                selectedStyle === 'mla-9'
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${selectedStyle === 'mla-9'
                   ? 'bg-blue-500 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
+                }`}
             >
               MLA 9
             </button>
             <button
               onClick={() => handleStyleChange('mla-7')}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                selectedStyle === 'mla-7'
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${selectedStyle === 'mla-7'
                   ? 'bg-blue-500 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
+                }`}
             >
               MLA 7
             </button>
             <button
               onClick={() => handleStyleChange('chicago')}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                selectedStyle === 'chicago'
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${selectedStyle === 'chicago'
                   ? 'bg-blue-500 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
+                }`}
             >
               Chicago
             </button>
             <button
               onClick={() => handleStyleChange('apa')}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                selectedStyle === 'apa'
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${selectedStyle === 'apa'
                   ? 'bg-blue-500 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
+                }`}
             >
               APA
             </button>
             <div className="relative">
-            <button onClick={() => setIsDropdownOpen(!isDropDownOpen)}
-            className="px-4 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">
-              More
-            </button>
-           {isDropDownOpen && (
-  <div className="absolute z-10 mt-2 w-64 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-    {availableStyles.map((style) => (
-      <button
-        key={style.citationFile}
-        onClick={() => {
-          handleStyleChange(
-            style.citationName?.toLowerCase().replace(/\s+/g, '-') || style.citationFile
-          );
-          setIsDropdownOpen(false);
-        }}
-        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-      >
-        {style.citationShortName || style.citationName}
-      </button>
-    ))}
-  </div>
-)}
+              <button onClick={() => setIsDropdownOpen(!isDropDownOpen)}
+                className="px-4 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">
+                More
+              </button>
+              {isDropDownOpen && (
+                <div className="absolute z-10 mt-2 w-64 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                  {availableStyles.map((style) => (
+                    <button
+                      key={style.citationFile}
+                      onClick={() => {
+                        handleStyleChange(
+                          style.citationName?.toLowerCase().replace(/\s+/g, '-') || style.citationFile
+                        );
+                        setIsDropdownOpen(false);
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      {style.citationShortName || style.citationName}
+                    </button>
+                  ))}
+                </div>
+              )}
 
             </div>
           </div>
@@ -469,7 +464,7 @@ const CitationGenerator: React.FC = () => {
           </div>
         )}
 
-     
+
       </div>
     </div>
   );

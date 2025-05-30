@@ -1,145 +1,52 @@
 /* Repository.css */
-.repository-home,
-.new-repository,
-.repo-detail,
-.paper-detail {
-  max-width: 100%;
-  margin: 0 auto;
-}
 
-/* Ensure buttons don't overflow */
-.btn {
-  font-size: clamp(0.875rem, 3vw, 1rem);
-  padding: clamp(0.4rem, 1.5vw, 0.5rem) clamp(0.75rem, 2vw, 1rem);
-  white-space: nowrap;
-}
-
-/* List group responsiveness */
-.list-group-item {
-  padding: clamp(0.75rem, 2vw, 1rem);
-}
-
-.repo-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.repo-info .h5 {
-  font-size: clamp(1rem, 3vw, 1.25rem);
-}
-
-.text-muted {
-  font-size: clamp(0.75rem, 2.5vw, 0.875rem);
-}
-
-/* Form responsiveness */
-.form-container {
-  max-width: 100%;
-}
-
-.form-control {
-  font-size: clamp(0.875rem, 3vw, 1rem);
-  padding: clamp(0.4rem, 1.5vw, 0.5rem);
-}
-
-.form-label {
-  font-size: clamp(0.875rem, 3vw, 1rem);
-}
-
-/* Table responsiveness */
 .table-responsive {
+  width: 100%;
   overflow-x: auto;
 }
 
 .table {
-  font-size: clamp(0.875rem, 2.5vw, 1rem);
+  min-width: 800px; /* Or the minimum width needed to prevent squishing */
 }
 
-.table th,
-.table td {
-  padding: clamp(0.5rem, 1.5vw, 0.75rem);
-  vertical-align: middle;
+.btn-save {
+  background-color: #28a745; /* Bootstrap success green */
+  color: white;
+  border: none;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.text-truncate {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.btn-save:hover {
+  background-color: #218838; /* Darker green on hover */
+  transform: scale(1.03); /* Slight zoom effect */
 }
 
-/* PDF viewer container */
-.pdf-viewer-container {
-  width: 100%;
-  overflow: hidden;
+.btn-save:active {
+  background-color: #1e7e34; /* Even darker on click */
+  transform: scale(0.98); /* Slight shrink on click */
 }
 
-/* Modal responsiveness */
-.modal-dialog {
-  max-width: clamp(300px, 90vw, 500px);
-  margin: 1rem auto;
+
+.flash-message.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 20px;
 }
 
-.modal-body,
-.modal-footer {
-  padding: clamp(0.75rem, 2vw, 1rem);
-}
-
-/* Media Queries */
-@media (max-width: 768px) {
-  .container {
-    padding-left: clamp(0.5rem, 2vw, 1rem);
-    padding-right: clamp(0.5rem, 2vw, 1rem);
+@media (max-width: 640px) {
+  .table {
+    font-size: 0.875rem; /* Make text smaller for mobile */
   }
 
-  .h3 {
-    font-size: clamp(1.25rem, 4vw, 1.5rem);
+  .btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
   }
 
-  .h5 {
-    font-size: clamp(1rem, 3vw, 1.25rem);
-  }
-
-  .h6 {
-    font-size: clamp(0.875rem, 2.5vw, 1rem);
-  }
-
-  .btn {
-    width: 100%;
-    margin-bottom: 0.5rem;
-  }
-
-  .d-flex.gap-2 {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .table th,
-  .table td {
-    font-size: clamp(0.75rem, 2vw, 0.875rem);
-  }
-
-  .modal-dialog {
-    max-width: 95vw;
-  }
-}
-
-@media (max-width: 576px) {
-  .list-group-item {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.5rem;
-  }
-
-  .form-group {
-    margin-bottom: 0.75rem;
-  }
-
-  .modal-body,
-  .modal-footer {
-    padding: clamp(0.5rem, 1.5vw, 0.75rem);
-  }
-
-  .pdf-viewer-container iframe {
-    height: clamp(200px, 40vh, 400px);
+  .mr-2 {
+    margin-right: 0.5rem;
   }
 }
