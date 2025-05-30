@@ -39,7 +39,9 @@ interface CitationData {
   URL?: string;
 }
 
-const BibifyClone: React.FC = () => {
+
+
+const CitationGenerator: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [citation, setCitation] = useState('Your citation will appear here...');
   const [selectedStyle, setSelectedStyle] = useState('mla-9');
@@ -47,43 +49,54 @@ const BibifyClone: React.FC = () => {
   const [searchResults, setSearchResults] = useState<(BookResult | WebsiteResult)[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchType, setSearchType] = useState<'book' | 'website'>('book');
+ const [isDropDownOpen, setIsDropdownOpen] = useState(false);
 
   // Use Flask backend as proxy
-  const API_BASE = 'http://localhost:5000';
+ const API_BASE = import.meta.env.VITE_BACKEND_URL;
+
 
   // Load citation styles on component mount
   useEffect(() => {
     loadCitationStyles();
   }, []);
 
+  
+
   const loadCitationStyles = async () => {
-    try {
-      console.log('Loading citation styles...');
-      const response = await fetch(`${API_BASE}/api/styles?limit=50`, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-        },
-      });
+  try {
+    console.log('Loading citation styles...');
+    const response = await fetch(`${API_BASE}/styles?limit=50`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
 
-      if (!response.ok) {
-        throw new Error(`Styles API error: ${response.status} ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      console.log('Styles loaded:', data);
-      setAvailableStyles(data.citationStyles || []);
-    } catch (error) {
-      console.error('Failed to load citation styles:', error);
-      // Fallback styles with .csl extension
-      setAvailableStyles([
-        { citationName: 'MLA 9th edition', citationShortName: 'MLA 9', citationFile: 'modern-language-association.csl' },
-        { citationName: 'MLA 7th edition', citationShortName: 'MLA 7', citationFile: 'modern-language-association-7th-edition.csl' },
-        { citationName: 'Chicago Manual of Style', citationShortName: 'Chicago', citationFile: 'chicago-fullnote-bibliography.csl' },
-        { citationName: 'American Psychological Association 7th edition', citationShortName: 'APA', citationFile: 'apa.csl' },
-      ]);
+    if (!response.ok) {
+      throw new Error(`Styles API error: ${response.status} ${response.statusText}`);
     }
-  };
+
+    const data = await response.json();
+
+    const styles = (data.citationStyles || []).map((style: Partial<CitationStyle>)=> ({
+      citationFile: style.citationFile ?? 'unknown.csl',
+      citationName: style.citationName ?? style.citationFile?.replace(/\.csl$/, '').replace(/-/g, ' ') ?? 'Unnamed Style',
+      citationShortName: style.citationShortName ?? null,
+    }));
+
+    setAvailableStyles(styles);
+  } catch (error) {
+    console.error('Failed to load citation styles:', error);
+    // Fallback styles with .csl extension
+    setAvailableStyles([
+      { citationName: 'MLA 9th edition', citationShortName: 'MLA 9', citationFile: 'modern-language-association.csl' },
+      { citationName: 'MLA 7th edition', citationShortName: 'MLA 7', citationFile: 'modern-language-association-7th-edition.csl' },
+      { citationName: 'Chicago Manual of Style', citationShortName: 'Chicago', citationFile: 'chicago-fullnote-bibliography.csl' },
+      { citationName: 'American Psychological Association 7th edition', citationShortName: 'APA', citationFile: 'apa.csl' },
+    ]);
+  }
+};
+
 
   const isUrl = (str: string) => {
     try {
@@ -109,7 +122,7 @@ const BibifyClone: React.FC = () => {
 
       if (isUrlSearch) {
         console.log('Searching for website:', searchQuery);
-        response = await fetch(`${API_BASE}/api/website?url=${encodeURIComponent(searchQuery)}`, {
+        response = await fetch(`${API_BASE}/website?url=${encodeURIComponent(searchQuery)}`, {
           method: 'GET',
           headers: {
             'Accept': 'application/json',
@@ -117,7 +130,7 @@ const BibifyClone: React.FC = () => {
         });
       } else {
         console.log('Searching for book:', searchQuery);
-        response = await fetch(`${API_BASE}/api/books?q=${encodeURIComponent(searchQuery)}`, {
+        response = await fetch(`${API_BASE}/books?q=${encodeURIComponent(searchQuery)}`, {
           method: 'GET',
           headers: {
             'Accept': 'application/json',
@@ -218,7 +231,7 @@ const BibifyClone: React.FC = () => {
 
       // Use qs.stringify to create query string
       const params = qs.stringify(citationData, { format: 'RFC3986' });
-      const url = `${API_BASE}/api/cite?${params}`;
+      const url = `${API_BASE}/cite?${params}`;
       console.log('Citation API URL:', url);
 
       const response = await fetch(url, {
@@ -336,9 +349,7 @@ const BibifyClone: React.FC = () => {
               >
                 <Copy className="w-5 h-5" />
               </button>
-              <button className="p-2 text-gray-600 hover:text-gray-800" title="Add to bibliography">
-                <Plus className="w-5 h-5" />
-              </button>
+           
             </div>
           </div>
 
@@ -384,9 +395,31 @@ const BibifyClone: React.FC = () => {
             >
               APA
             </button>
-            <button className="px-4 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">
+            <div className="relative">
+            <button onClick={() => setIsDropdownOpen(!isDropDownOpen)}
+            className="px-4 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">
               More
             </button>
+           {isDropDownOpen && (
+  <div className="absolute z-10 mt-2 w-64 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+    {availableStyles.map((style) => (
+      <button
+        key={style.citationFile}
+        onClick={() => {
+          handleStyleChange(
+            style.citationName?.toLowerCase().replace(/\s+/g, '-') || style.citationFile
+          );
+          setIsDropdownOpen(false);
+        }}
+        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+      >
+        {style.citationShortName || style.citationName}
+      </button>
+    ))}
+  </div>
+)}
+
+            </div>
           </div>
         </div>
 
@@ -436,22 +469,10 @@ const BibifyClone: React.FC = () => {
           </div>
         )}
 
-        {/* Manual Cite Button */}
-        <div className="text-center">
-          <button className="bg-gray-200 text-gray-700 px-8 py-3 rounded-lg font-medium hover:bg-gray-300 transition-colors">
-            MANUAL CITE
-          </button>
-        </div>
-
-        {/* Footer */}
-        <div className="text-center mt-16 pt-8 border-t border-gray-200">
-          <p className="text-gray-600">
-            2025 — <a href="#" className="text-blue-500 hover:text-blue-600">Vincent Wang</a>
-          </p>
-        </div>
+     
       </div>
     </div>
   );
 };
 
-export default BibifyClone;
+export default CitationGenerator;
