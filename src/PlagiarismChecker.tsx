@@ -8,7 +8,12 @@ const { Title, Paragraph } = Typography;
 // ✅ Type definition for the plagiarism result
 type PlagiarismResult = {
   plagiarism_percentage: number;
-  results: string[];
+  results: {
+    sentence: string;
+    color: string;
+    is_plagiarized: boolean;
+    source: string | null;
+  }[];
 };
 
 const PlagiarismChecker = () => {
@@ -139,42 +144,47 @@ const PlagiarismChecker = () => {
         </div>
       )}
 
-      {!loading && plagiarismResult && (
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-        >
-          <Card
-            title="Plagiarism Result"
-            style={{
-              marginTop: '30px',
-              borderRadius: '12px',
-              overflowWrap: 'break-word',
-            }}
-            bordered={false}
-            headStyle={{
-              backgroundColor: '#f5f5f5',
-              borderRadius: '12px 12px 0 0',
-              fontSize: '22px',
-              fontWeight: 600,
-            }}
-          >
-            <Paragraph style={{ fontSize: '20px', fontWeight: 500 }}>
-              Plagiarism detected: {plagiarismResult.plagiarism_percentage}%
-            </Paragraph>
-            <div>
-              {plagiarismResult.results.map((result: string, index: number) => (
-                <div
-                  key={index}
-                  style={{ marginBottom: '8px' }}
-                  dangerouslySetInnerHTML={{ __html: result }}
-                />
-              ))}
-            </div>
-          </Card>
-        </motion.div>
-      )}
+      {plagiarismResult && plagiarismResult.results && (
+  <motion.div
+    initial={{ opacity: 0, y: 30 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ delay: 0.4 }}
+  >
+    <Card
+      title="Plagiarism Result"
+      style={{
+        marginTop: '30px',
+        borderRadius: '12px',
+        overflowWrap: 'break-word',
+      }}
+      bordered={false}
+      headStyle={{
+        backgroundColor: '#f5f5f5',
+        borderRadius: '12px 12px 0 0',
+        fontSize: '22px',
+        fontWeight: 600,
+      }}
+    >
+      <Paragraph style={{ fontSize: '20px', fontWeight: 500 }}>
+        Plagiarism detected: {plagiarismResult.plagiarism_percentage}%
+      </Paragraph>
+      <div>
+        {plagiarismResult.results.map((result, index) => (
+          <div key={index} style={{ marginBottom: '8px' }}>
+            <span style={{ color: result.color }}>
+              {result.sentence}
+            </span>
+            {result.is_plagiarized && result.source && (
+              <Paragraph style={{ margin: 0, fontSize: '14px' }}>
+                Source: <a href={result.source} target="_blank" rel="noopener noreferrer">{result.source}</a>
+              </Paragraph>
+            )}
+          </div>
+        ))}
+      </div>
+    </Card>
+  </motion.div>
+)}
     </motion.div>
 
   );
