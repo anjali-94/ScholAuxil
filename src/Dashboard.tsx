@@ -5,7 +5,7 @@ import { Steps } from 'antd';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { useNavigate } from 'react-router-dom';
-import AskPromptDrawer from './AskPromptDrawer';
+import Chatbot from './Chatbot';
 import NavigationSider from './DashboardWrapper/NavigationSider';
 import HeaderBar from './DashboardWrapper/HeaderBar';
 import BibifyClone from './DashboardWrapper/Citation';
@@ -219,7 +219,7 @@ const Dashboard: React.FC = () => {
       <Layout>
         <HeaderBar collapsed={collapsed} setCollapsed={setCollapsed} logout={handleLogout} />
 
-        <Content style={{ margin: '24px' }}>
+        <Content style={{ margin: '16px' }}>
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
@@ -405,7 +405,7 @@ const Dashboard: React.FC = () => {
         </Footer>
       </Layout>
 
-      <AskPromptDrawer
+      <Chatbot
         open={showBot}
         onClose={() => setShowBot(false)}
         configuration={{ ga4Property: 'your-property-id', Ga4Widget: { ga4Query: {} } }}

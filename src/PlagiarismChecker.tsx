@@ -1,138 +1,83 @@
 import { useState } from 'react';
-import { Button, Upload, message, Card, Typography, Spin } from 'antd';
-import { UploadOutlined, FileSearchOutlined } from '@ant-design/icons';
-import { motion } from 'framer-motion';
+import { Button, Input, Typography, Spin, Alert } from 'antd';
+import axios from 'axios';
 
+const { TextArea } = Input;
 const { Title, Paragraph } = Typography;
 
 const PlagiarismChecker = () => {
-  const [file, setFile] = useState<any>(null);
+  const [text, setText] = useState('');
   const [loading, setLoading] = useState(false);
-  const [plagiarismResult, setPlagiarismResult] = useState<string | null>(null);
+  const [result, setResult] = useState<any>(null);
+  const [error, setError] = useState('');
 
-  const handleFileUpload = (file: any) => {
-    setFile(file);
-    console.log('Uploaded file:', file);
-  };
+  const handleCheck = async () => {
+    const trimmedText = text.trim();
 
-  const checkPlagiarism = async () => {
-      console.log('API Key:', import.meta.env.VITE_API_KEY);
-    if (!file) {
-      message.warning('Please upload a document first.');
+    if (!trimmedText) {
+      setError('Please enter text to check for plagiarism.');
       return;
     }
 
-    // Clear previous result and start loading
-    setPlagiarismResult(null);
-    setLoading(true);
+    if (trimmedText.length < 100) {
+      setError(`Text too short. Minimum 100 characters required (current: ${trimmedText.length}).`);
+      return;
+    }
 
-    const formData = new FormData();
-    formData.append('file', file);
+    if (trimmedText.length > 120000) {
+      setError(`Text too long. Maximum 120,000 characters allowed (current: ${trimmedText.length}).`);
+      return;
+    }
+
+    setError('');
+    setLoading(true);
+    setResult(null);
 
     try {
-      const response = await fetch('http://localhost:5000/plagiarism/check', {
-        method: 'POST',
-        headers: {
-          'x-api-key': import.meta.env.VITE_API_KEY,
-        },
-        body: formData,
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setPlagiarismResult(`Plagiarism detected: ${data.plagiarism_percentage}%`);
-        message.success('Plagiarism check completed.');
-      } else {
-        message.error('Failed to check plagiarism.');
-      }
-    } catch (error) {
-      console.error("Error in plagiarism check:", error);
-      message.error('Error occurred while checking plagiarism.');
+      const response = await axios.post('http://localhost:5000/api/check-plagiarism', { text: trimmedText });
+      setResult(response.data);
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Something went wrong while checking for plagiarism.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-      style={{
-        maxWidth: '600px',
-        margin: '40px auto',
-        padding: '30px',
-        backgroundColor: '#fff',
-        borderRadius: '16px',
-        boxShadow: '0 8px 24px rgba(0,0,0,0.1)'
-      }}
-    >
-      <Title level={2} style={{ textAlign: 'center' }}>
-        <FileSearchOutlined /> Plagiarism Checker
-      </Title>
+    <div style={{ padding: '2rem', maxWidth: 800, margin: '0 auto' }}>
+      <Title level={2}>Plagiarism Checker</Title>
+      <Paragraph>Enter text below to check for potential plagiarism.</Paragraph>
 
-      <Paragraph type="secondary" style={{ textAlign: 'center' }}>
-        Upload your document to check for plagiarism. Supported formats: .docx, .pdf, .txt.
-      </Paragraph>
+      <TextArea
+        rows={8}
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        placeholder="Paste your text here..."
+      />
 
-      <Upload
-        beforeUpload={(file) => {
-          handleFileUpload(file);
-          return false;
-        }}
-        showUploadList={false}
-      >
-        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-          <Button icon={<UploadOutlined />} size="large" block style={{ marginTop: '20px' }}>
-            Upload Document
-          </Button>
-        </motion.div>
-      </Upload>
+      <Button type="primary" onClick={handleCheck} style={{ marginTop: 16 }} disabled={loading}>
+        Check Plagiarism
+      </Button>
 
-      {file && (
-        <Paragraph style={{ marginTop: '12px' }}>
-          <strong>Selected File:</strong> {file.name}
-        </Paragraph>
-      )}
+      {loading && <Spin style={{ display: 'block', marginTop: 20 }} />}
 
-      <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-        <Button
-          type="primary"
-          size="large"
-          block
-          onClick={checkPlagiarism}
-          style={{ marginTop: '20px' }}
-        >
-          Check Plagiarism
-        </Button>
-      </motion.div>
+      {error && <Alert message={error} type="error" style={{ marginTop: 20 }} />}
 
-      {/* Show loader while checking */}
-      {loading && (
-        <div style={{ textAlign: 'center', marginTop: '30px' }}>
-          <Spin size="large" tip="Checking for plagiarism..." />
+      {result && (
+        <div style={{ marginTop: 20 }}>
+          <Title level={4}>Plagiarism Report</Title>
+          <pre style={{ background: '#f5f5f5', padding: '1rem' }}>
+            {JSON.stringify(result, null, 2)}
+          </pre>
         </div>
       )}
-
-      {/* Show result only after loading is false and result exists */}
-      {!loading && plagiarismResult && (
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-        >
-          <Card
-            title="Plagiarism Result"
-            style={{ marginTop: '30px', borderRadius: '12px'}}
-            bordered={false}
-            headStyle={{ backgroundColor: '#f5f5f5', borderRadius: '12px 12px 0 0',  fontSize: '22px', fontWeight: 600}}
-          >
-            <Paragraph style={{ fontSize: '20px', fontWeight: 500 }}>{plagiarismResult}</Paragraph>
-          </Card>
-        </motion.div>
-      )}
-    </motion.div>
+    </div>
   );
 };
 
 export default PlagiarismChecker;
+
+
+
+
+

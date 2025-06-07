@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Layout, Menu } from 'antd';
 import {
-  DashboardOutlined,
+  HomeOutlined,
   RobotOutlined,
-  UploadOutlined,
+  SafetyOutlined,
+  FileTextOutlined,
   LogoutOutlined,
-  PlusOutlined
+  DatabaseOutlined
 } from '@ant-design/icons';
 
 const { Sider } = Layout;
@@ -36,7 +37,7 @@ const NavigationSider: React.FC<NavigationSiderProps> = ({
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-  // Handler to reset to the home dashboard
+
   const handleHomeClick = () => {
     setShowBot(false);
     setShowPlagiarismChecker(false);
@@ -50,35 +51,20 @@ const NavigationSider: React.FC<NavigationSiderProps> = ({
       collapsed={collapsed}
       onCollapse={(value) => setCollapsed(value)}
       breakpoint="md"
-      collapsedWidth={isMobile ? 80 : 80} // Show only icons on mobile collapse
+      collapsedWidth={isMobile ? 80 : 80}
       trigger={null}
       style={{ minHeight: '100vh' }}
     >
       <div style={{ height: 32, margin: 16, color: '#fff', textAlign: 'center' }}>
-        {!collapsed || !isMobile ? 'Dashboard' : null}
+        {!collapsed ? 'Dashboard' : null}
       </div>
       <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}> 
-        <Menu.Item key="1" icon={<DashboardOutlined />} onClick={handleHomeClick}>
-          {!collapsed || !isMobile ? 'Home' : null}
-        </Menu.Item>
-        <Menu.Item key="2" icon={<RobotOutlined />} onClick={() => setShowBot(true)}>
-          {!collapsed || !isMobile ? 'Ask Bot' : null}
-        </Menu.Item>
-        <Menu.Item
-          key="3"
-          icon={<UploadOutlined />}
-          onClick={() => {
-            setShowPlagiarismChecker(true);
-            setShowRepository(false);
-            setShowBot(false);
-            setShowBibciteGenerator(false);
-          }}
-        >
-          {!collapsed || !isMobile ? 'Plagiarism Checker' : null}
+        <Menu.Item key="1" icon={<HomeOutlined />} onClick={handleHomeClick}>
+          {!collapsed ? 'Home' : null}
         </Menu.Item>
         <Menu.Item
           key="4"
-          icon={<PlusOutlined />}
+          icon={<FileTextOutlined />}
           onClick={() => {
             setShowBot(false);
             setShowPlagiarismChecker(false);
@@ -86,11 +72,11 @@ const NavigationSider: React.FC<NavigationSiderProps> = ({
             setShowBibciteGenerator(true);
           }}
         >
-          {!collapsed || !isMobile ? 'Citation Generator' : null}
+          {!collapsed ? 'Citation Generator' : null}
         </Menu.Item>
         <Menu.Item
           key="5"
-          icon={<PlusOutlined />}
+          icon={<DatabaseOutlined />}
           onClick={() => {
             setShowBot(false);
             setShowPlagiarismChecker(false);
@@ -98,10 +84,25 @@ const NavigationSider: React.FC<NavigationSiderProps> = ({
             setShowBibciteGenerator(false);
           }}
         >
-          {!collapsed || !isMobile ? 'Repository' : null}
+          {!collapsed ? 'Repository' : null}
+        </Menu.Item>
+        <Menu.Item
+          key="3"
+          icon={<SafetyOutlined />}
+          onClick={() => {
+            setShowPlagiarismChecker(true);
+            setShowRepository(false);
+            setShowBot(false);
+            setShowBibciteGenerator(false);
+          }}
+        >
+          {!collapsed ? 'Plagiarism Checker' : null}
+        </Menu.Item>
+        <Menu.Item key="2" icon={<RobotOutlined />} onClick={() => setShowBot(true)}>
+          {!collapsed ? 'Chat Bot' : null}
         </Menu.Item>
         <Menu.Item key="6" icon={<LogoutOutlined />} onClick={handleLogout}>
-          {!collapsed || !isMobile ? 'Logout' : null}
+          {!collapsed ? 'Logout' : null}
         </Menu.Item>
       </Menu>
     </Sider>
