@@ -12,20 +12,18 @@ const PlagiarismChecker = () => {
   const [error, setError] = useState('');
 
   const handleCheck = async () => {
-    const trimmedText = text.trim();
-
-    if (!trimmedText) {
+    if (!text.trim()) {
       setError('Please enter text to check for plagiarism.');
       return;
     }
 
-    if (trimmedText.length < 100) {
-      setError(`Text too short. Minimum 100 characters required (current: ${trimmedText.length}).`);
+    if (text.trim().length < 100) {
+      setError(`Text too short. Minimum 100 characters required (current: ${text.trim().length}).`);
       return;
     }
 
-    if (trimmedText.length > 120000) {
-      setError(`Text too long. Maximum 120,000 characters allowed (current: ${trimmedText.length}).`);
+    if (text.trim().length > 120000) {
+      setError(`Text too long. Maximum 120,000 characters allowed (current: ${text.trim().length}).`);
       return;
     }
 
@@ -34,10 +32,10 @@ const PlagiarismChecker = () => {
     setResult(null);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/check-plagiarism', { text: trimmedText });
+      const response = await axios.post('http://localhost:5000/api/check-plagiarism', { text });
       setResult(response.data);
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Something went wrong while checking for plagiarism.');
+      setError(err.response?.data?.error || 'Something went wrong');
     } finally {
       setLoading(false);
     }
@@ -46,7 +44,7 @@ const PlagiarismChecker = () => {
   return (
     <div style={{ padding: '2rem', maxWidth: 800, margin: '0 auto' }}>
       <Title level={2}>Plagiarism Checker</Title>
-      <Paragraph>Enter text below to check for potential plagiarism.</Paragraph>
+      <Paragraph>Enter text below to check for potential plagiarism using Winston AI.</Paragraph>
 
       <TextArea
         rows={8}
@@ -76,8 +74,3 @@ const PlagiarismChecker = () => {
 };
 
 export default PlagiarismChecker;
-
-
-
-
-
