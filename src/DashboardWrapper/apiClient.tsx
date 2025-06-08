@@ -6,7 +6,7 @@ export const apiClient = async () => {
     const token = user ? await user.getIdToken() : null;
 
     return axios.create({
-        baseURL: 'http://localhost:5000/api',
+        baseURL: 'https://backend-scholauxil-1.onrender.com//api',
         headers: {
             Authorization: `Bearer ${token}`
         }

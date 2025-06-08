@@ -328,24 +328,28 @@ const Dashboard: React.FC = () => {
                     borderRadius: '12px',
                     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
                     border: '1px solid #d9d9d9',
+                    overflowX: 'auto',
                   }}
                   bodyStyle={{
-                    padding: '24px',
-                    height: '420px',
+                    padding: '16px',
+                    minHeight: '420px',
                   }}
                 >
-                  <Calendar
-                    localizer={localizer}
-                    events={events}
-                    startAccessor="start"
-                    endAccessor="end"
-                    style={{
-                      height: '100%',
-                      background: '#fff',
-                      borderRadius: '8px',
-                    }}
-                  />
+                  <div style={{ minWidth: 600 }}>
+                    <Calendar
+                      localizer={localizer}
+                      events={events}
+                      startAccessor="start"
+                      endAccessor="end"
+                      style={{
+                        height: '400px',
+                        background: '#fff',
+                        borderRadius: '8px',
+                      }}
+                    />
+                  </div>
                 </Card>
+
               </>
             )}
 

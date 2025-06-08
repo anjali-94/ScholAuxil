@@ -32,7 +32,7 @@ const PlagiarismChecker = () => {
     setResult(null);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/check-plagiarism', { text });
+      const response = await axios.post('https://backend-scholauxil-1.onrender.com//api/check-plagiarism', { text });
       setResult(response.data);
     } catch (err: any) {
       setError(err.response?.data?.error || 'Something went wrong');

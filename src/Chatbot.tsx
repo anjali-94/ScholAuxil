@@ -112,7 +112,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ open, onClose }) => {
       if (uploadedDocumentFile) formData.append('file', uploadedDocumentFile);
       if (uploadedImageFile) formData.append('image', uploadedImageFile);
 
-      const response = await fetch('http://localhost:5000/api/chat', {
+      const response = await fetch('https://backend-scholauxil-1.onrender.com//api/chat', {
         method: 'POST',
         body: formData,
       });
