@@ -1,46 +1,29 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-
-
-# node_modules (dependencies installed via npm/yarn/pnpm)
+# Dependencies
 node_modules/
 
-# build output (if you're using Vite)
+# Build output
 dist/
 
-# dotenv environment files
+# Firebase related (optional - if you're using Firebase CLI only locally)
+.firebase/
+.firebase*
+
+# Environment variables
 .env
-.env.*.local
+
+# Vite cache (optional)
+.vite/
 
 # Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# IDE-specific (optional, safe to add)
+.vscode/
+.idea/
 
+# OS-specific
+.DS_Store
+Thumbs.db
 
-# eslint cache
-.eslintcache

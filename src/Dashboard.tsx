@@ -7,7 +7,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { useNavigate } from 'react-router-dom';
 import Chatbot from './Chatbot';
 import NavigationSider from './DashboardWrapper/NavigationSider';
-import HeaderBar from './DashboardWrapper/HeaderBar';
+import Header from './DashboardWrapper/Header';
 import BibifyClone from './DashboardWrapper/Citation';
 import ResearchProgress from './DashboardWrapper/ResearchProgress';
 import CustomTodo from './DashboardWrapper/CustomTodo';
@@ -217,9 +217,12 @@ const Dashboard: React.FC = () => {
       />
 
       <Layout>
-        <HeaderBar collapsed={collapsed} setCollapsed={setCollapsed} logout={handleLogout} />
+        <div style={{ marginBottom: '18px' }}>
+  <Header collapsed={collapsed} setCollapsed={setCollapsed} logout={handleLogout} />
+</div>
 
-        <Content style={{ margin: '16px' }}>
+
+        <Content>
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}

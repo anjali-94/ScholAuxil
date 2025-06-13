@@ -61,7 +61,6 @@ const CitationGenerator: React.FC = () => {
   }, []);
 
 
-
   const loadCitationStyles = async () => {
     try {
       console.log('Loading citation styles...');
