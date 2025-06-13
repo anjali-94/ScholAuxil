@@ -1,8 +1,8 @@
 # Dependencies
 node_modules/
 
-# Build output
-dist/
+# # Build output
+# dist/
 
 # Firebase related (optional - if you're using Firebase CLI only locally)
 .firebase/
